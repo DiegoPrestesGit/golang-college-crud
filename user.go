@@ -1,9 +1,14 @@
-// package main
+package main
 
-// import "gorm.io/gorm"
+import (
+	"fmt"
+	"net/http"
+)
 
-// type User struct {
-// 	gorm.Model
-// 	Name  string
-// 	Email string
-// }
+func ALlUsers(response http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(response, "allUsers endpoint hit")
+}
+
+func NewUser(response http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(response, "newUser endpoint hit")
+}
