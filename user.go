@@ -12,3 +12,7 @@ func ALlUsers(response http.ResponseWriter, request *http.Request) {
 func NewUser(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(response, "newUser endpoint hit")
 }
+
+func FindUserById(response http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(response, "findbyid endpoint hit")
+}
