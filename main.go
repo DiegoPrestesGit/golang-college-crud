@@ -23,5 +23,6 @@ func handleRequests() {
 
 func main() {
 	fmt.Println("Go!")
-	handleRequests()
+	InitialMigration()
+	// handleRequests()
 }

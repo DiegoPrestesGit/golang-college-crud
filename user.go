@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
-)
+	"database/sql"
 
-var db *gorm.DB
-var err error
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/lib/pq"
+)
 
 type User struct {
 	gorm.Model
@@ -21,22 +22,26 @@ type User struct {
 }
 
 func InitialMigration() {
-	host := "localhost"
-	user := "postgres"
-	dbname := "postgres"
-	password := "login-password"
-	port := "5433"
+	const (
+		dialect  = "postgres"
+		host     = "localhost"
+		user     = "postgres"
+		dbname   = "postgres"
+		password = "login-password"
+		port     = "5433"
+	)
 
-	database_config := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
-	db, err := gorm.Open("postgres", database_config)
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
+	db, err := sql.Open(dialect, dbURI)
+
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("Failed to connect to database")
 	} else {
 		fmt.Println("connected")
 	}
+
 	defer db.Close()
-	db.AutoMigrate(&User{})
 }
 
 func ALlUsers(response http.ResponseWriter, request *http.Request) {
