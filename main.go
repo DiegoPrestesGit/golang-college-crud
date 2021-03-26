@@ -8,13 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World")
-}
-
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", helloWorld).Methods("GET")
 	router.HandleFunc("/api/golang/users", ALlUsers).Methods("GET")
 	router.HandleFunc("/api/golang/users/{id}", FindUserById).Methods("GET")
 	router.HandleFunc("/api/golang/users", NewUser).Methods("POST")
@@ -23,6 +18,5 @@ func handleRequests() {
 
 func main() {
 	fmt.Println("Go!")
-	InitialMigration()
-	// handleRequests()
+	handleRequests()
 }
