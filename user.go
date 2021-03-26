@@ -21,7 +21,10 @@ type User struct {
 	Updated_at string
 }
 
-func InitialMigration() {
+var db *gorm.DB
+var err error
+
+func Connection() {
 	const (
 		dialect  = "postgres"
 		host     = "localhost"
@@ -32,7 +35,7 @@ func InitialMigration() {
 	)
 
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
-	db, err := sql.Open(dialect, dbURI)
+	_, err := sql.Open(dialect, dbURI)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -41,17 +44,19 @@ func InitialMigration() {
 		fmt.Println("connected")
 	}
 
-	defer db.Close()
 }
 
 func ALlUsers(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(response, "allUsers endpoint hit")
+	defer db.Close()
 }
 
 func NewUser(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(response, "newUser endpoint hit")
+	defer db.Close()
 }
 
 func FindUserById(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(response, "findbyid endpoint hit")
+	defer db.Close()
 }
