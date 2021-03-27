@@ -32,21 +32,20 @@ var UserBodyRequest struct {
 	Updated_at string
 }
 
-var db *gorm.DB
 var err error
 
-func Connection() {
-	const (
-		dialect  = "postgres"
-		host     = "localhost"
-		user     = "postgres"
-		dbname   = "postgres"
-		password = "login-password"
-		port     = "5433"
-	)
+const (
+	dialect  = "postgres"
+	host     = "localhost"
+	user     = "postgres"
+	dbname   = "postgres"
+	password = "login-password"
+	port     = "5433"
+)
 
+func ALlUsers(response http.ResponseWriter, request *http.Request) {
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
-	_, err := sql.Open(dialect, dbURI)
+	db, err := sql.Open(dialect, dbURI)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -54,11 +53,10 @@ func Connection() {
 	} else {
 		fmt.Println("connected")
 	}
-	// defer db.Close()
-}
+	defer db.Close()
 
-func ALlUsers(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, "allUsers endpoint hit")
+	var users []User
+	db.json.NewEncoder(response).Encode(users)
 	// defer db.Close()
 }
 
