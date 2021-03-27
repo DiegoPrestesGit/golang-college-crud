@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"database/sql"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/lib/pq"
@@ -32,6 +30,7 @@ var UserBodyRequest struct {
 	Updated_at string
 }
 
+var db *gorm.DB
 var err error
 
 const (
@@ -43,9 +42,9 @@ const (
 	port     = "5433"
 )
 
-func ALlUsers(response http.ResponseWriter, request *http.Request) {
+func Connection() *gorm.DB {
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
-	db, err := sql.Open(dialect, dbURI)
+	db, err := gorm.Open(dialect, dbURI)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -54,9 +53,12 @@ func ALlUsers(response http.ResponseWriter, request *http.Request) {
 		fmt.Println("connected")
 	}
 	defer db.Close()
+	return db
+}
 
-	var users []User
-	db.json.NewEncoder(response).Encode(users)
+func ALlUsers(response http.ResponseWriter, request *http.Request) {
+	db := Connection()
+	println(db)
 	// defer db.Close()
 }
 
@@ -68,8 +70,6 @@ func NewUser(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// db.AutoMigrate(&User{})
-	// db.Create(&User{})
 	log.Println(UserBodyRequest)
 	fmt.Fprintf(response, "%v\n", UserBodyRequest)
 }
