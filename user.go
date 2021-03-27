@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"database/sql"
@@ -13,6 +15,15 @@ import (
 
 type User struct {
 	gorm.Model
+	Id         string
+	Name       string
+	Email      string
+	Password   string
+	Created_at string
+	Updated_at string
+}
+
+var UserBodyRequest struct {
 	Id         string
 	Name       string
 	Email      string
@@ -43,20 +54,29 @@ func Connection() {
 	} else {
 		fmt.Println("connected")
 	}
-
+	// defer db.Close()
 }
 
 func ALlUsers(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(response, "allUsers endpoint hit")
-	defer db.Close()
+	// defer db.Close()
 }
 
 func NewUser(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, "newUser endpoint hit")
-	defer db.Close()
+	Connection()
+	err := json.NewDecoder(request.Body).Decode(&UserBodyRequest)
+	if nil != err {
+		log.Println(err)
+		return
+	}
+
+	// db.AutoMigrate(&User{})
+	// db.Create(&User{})
+	log.Println(UserBodyRequest)
+	fmt.Fprintf(response, "%v\n", UserBodyRequest)
 }
 
 func FindUserById(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(response, "findbyid endpoint hit")
-	defer db.Close()
+	// defer db.Close()
 }
