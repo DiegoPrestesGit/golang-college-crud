@@ -3,35 +3,21 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/lib/pq"
 )
 
-type User struct {
+type UserGolang struct {
 	gorm.Model
-	Id         string
-	Name       string
-	Email      string
-	Password   string
-	Created_at string
-	Updated_at string
+	Id       string
+	Name     string
+	Email    string
+	Password string
 }
-
-var UserBodyRequest struct {
-	Id         string
-	Name       string
-	Email      string
-	Password   string
-	Created_at string
-	Updated_at string
-}
-
-var db *gorm.DB
-var err error
 
 const (
 	dialect  = "postgres"
@@ -52,28 +38,49 @@ func Connection() *gorm.DB {
 	} else {
 		fmt.Println("connected")
 	}
-	defer db.Close()
+	db.AutoMigrate(&UserGolang{})
 	return db
 }
 
 func ALlUsers(response http.ResponseWriter, request *http.Request) {
 	db := Connection()
-	println(db)
+
+	var users []UserGolang
+	db.Find(&users)
+	json.NewEncoder(response).Encode(&users)
+
+	defer db.Close()
 }
 
 func NewUser(response http.ResponseWriter, request *http.Request) {
-	Connection()
-	err := json.NewDecoder(request.Body).Decode(&UserBodyRequest)
-	if nil != err {
-		log.Println(err)
-		return
+	db := Connection()
+
+	var UserBodyRequest struct {
+		Id       string
+		Name     string
+		Email    string
+		Password string
 	}
 
-	log.Println(UserBodyRequest)
-	fmt.Fprintf(response, "%v\n", UserBodyRequest)
+	json.NewDecoder(request.Body).Decode(&UserBodyRequest)
+
+	createdUser := db.Create(&UserBodyRequest)
+
+	err := createdUser.Error
+	if nil != err {
+		json.NewEncoder(response).Encode(err)
+		return
+	}
+	json.NewEncoder(response).Encode(UserBodyRequest)
+	defer db.Close()
 }
 
 func FindUserById(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, "findbyid endpoint hit")
-	// defer db.Close()
+	db := Connection()
+	params := mux.Vars(request)
+
+	var user UserGolang
+	rows := db.First(&user, "id = ?", params["id"])
+
+	json.NewEncoder(response).Encode(rows)
 }
