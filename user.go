@@ -59,7 +59,6 @@ func Connection() *gorm.DB {
 func ALlUsers(response http.ResponseWriter, request *http.Request) {
 	db := Connection()
 	println(db)
-	// defer db.Close()
 }
 
 func NewUser(response http.ResponseWriter, request *http.Request) {
