@@ -13,22 +13,22 @@ import (
 
 type UserGolang struct {
 	gorm.Model
-	Id       string
+	// Id       string `gorm:"typevarchar(100);unique_index"`
 	Name     string
-	Email    string
+	Email    string `gorm:"typevarchar(100);unique_index"`
 	Password string
 }
 
-const (
-	dialect  = "postgres"
-	host     = "localhost"
-	user     = "postgres"
-	dbname   = "postgres"
-	password = "login-password"
-	port     = "5433"
-)
-
 func Connection() *gorm.DB {
+	const (
+		dialect  = "postgres"
+		host     = "localhost"
+		user     = "postgres"
+		dbname   = "postgres"
+		password = "login-password"
+		port     = "5433"
+	)
+
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
 	db, err := gorm.Open(dialect, dbURI)
 
@@ -82,5 +82,6 @@ func FindUserById(response http.ResponseWriter, request *http.Request) {
 	var user UserGolang
 	rows := db.First(&user, "id = ?", params["id"])
 
+	defer db.Close()
 	json.NewEncoder(response).Encode(rows)
 }
