@@ -13,7 +13,7 @@ import (
 
 type UserGolang struct {
 	gorm.Model
-	// Id       string `gorm:"typevarchar(100);unique_index"`
+	Id       int `gorm:"typevarchar(100);unique_index"`
 	Name     string
 	Email    string `gorm:"typevarchar(100);unique_index"`
 	Password string
@@ -55,23 +55,19 @@ func ALlUsers(response http.ResponseWriter, request *http.Request) {
 func NewUser(response http.ResponseWriter, request *http.Request) {
 	db := Connection()
 
-	var UserBodyRequest struct {
-		Id       string
-		Name     string
-		Email    string
-		Password string
-	}
+	var createUser UserGolang
 
-	json.NewDecoder(request.Body).Decode(&UserBodyRequest)
+	json.NewDecoder(request.Body).Decode(&createUser)
 
-	createdUser := db.Create(&UserBodyRequest)
+	createdUser := db.Create(&createUser)
 
 	err := createdUser.Error
 	if nil != err {
-		json.NewEncoder(response).Encode(err)
+		json.NewEncoder(response).Encode(&createUser)
 		return
 	}
-	json.NewEncoder(response).Encode(UserBodyRequest)
+
+	json.NewEncoder(response).Encode(createUser)
 	defer db.Close()
 }
 
@@ -82,6 +78,6 @@ func FindUserById(response http.ResponseWriter, request *http.Request) {
 	var user UserGolang
 	rows := db.First(&user, "id = ?", params["id"])
 
-	defer db.Close()
 	json.NewEncoder(response).Encode(rows)
+	defer db.Close()
 }
