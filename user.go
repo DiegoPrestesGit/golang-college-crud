@@ -13,7 +13,6 @@ import (
 
 type UserGolang struct {
 	gorm.Model
-	Id       int `gorm:"typevarchar(100);unique_index"`
 	Name     string
 	Email    string `gorm:"typevarchar(100);unique_index"`
 	Password string
@@ -22,14 +21,14 @@ type UserGolang struct {
 func Connection() *gorm.DB {
 	const (
 		dialect  = "postgres"
-		host     = "localhost"
+		host     = "college-crud-instance-1.csaohqjx3mfa.us-east-1.rds.amazonaws.com"
 		user     = "postgres"
-		dbname   = "postgres"
-		password = "login-password"
-		port     = "5433"
+		dbname   = "collegeCRUD"
+		password = "12345678"
+		port     = "5432"
 	)
 
-	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbname, password, port)
+	dbURI := fmt.Sprintf("host=%s user=%s sslmode=disable password=%s port=%s", host, user, password, port)
 	db, err := gorm.Open(dialect, dbURI)
 
 	if err != nil {
@@ -39,6 +38,7 @@ func Connection() *gorm.DB {
 		fmt.Println("connected")
 	}
 	db.AutoMigrate(&UserGolang{})
+
 	return db
 }
 
